@@ -9,6 +9,7 @@ function App() {
   const [activeCategory, setActiveCategory] = useState('oop');
   const [activeTopicId, setActiveTopicId] = useState('encapsulation');
   const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
@@ -34,7 +35,14 @@ function App() {
       <div className="App">
         <header className="header">
           <div className="header-top">
-            <h1>CS Fundamentals</h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <button className="hamburger-menu" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+                <span></span>
+                <span></span>
+                <span></span>
+              </button>
+              <h1>CS Fundamentals</h1>
+            </div>
             <button className="theme-toggle" onClick={toggleTheme}>
               {isDarkMode ? (
                 <>
@@ -82,6 +90,8 @@ function App() {
             activeTopicId={activeTopicId}
             onCategoryChange={handleCategoryChange}
             onTopicChange={setActiveTopicId}
+            isOpen={isSidebarOpen}
+            onClose={() => setIsSidebarOpen(false)}
           />
           
           <main className="content">
