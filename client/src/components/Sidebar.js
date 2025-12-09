@@ -1,33 +1,22 @@
 import React from 'react';
 
-const Sidebar = ({ categories, activeCategory, activeTopicId, onCategoryChange, onTopicChange }) => {
+const Sidebar = ({ categories, activeCategory, activeTopicId, onTopicChange }) => {
+  const currentCategory = categories[activeCategory];
+  
   return (
     <aside className="sidebar">
       <div className="sidebar-content">
-        {Object.entries(categories).map(([categoryKey, category]) => (
-          <div key={categoryKey} className="category-section">
-            <h3 
-              className={`category-title ${activeCategory === categoryKey ? 'active' : ''}`}
-              onClick={() => onCategoryChange(categoryKey)}
+        <ul className="topic-list">
+          {currentCategory.topics.map(topic => (
+            <li
+              key={topic.id}
+              className={`topic-item ${activeTopicId === topic.id ? 'active' : ''}`}
+              onClick={() => onTopicChange(topic.id)}
             >
-              {category.name}
-            </h3>
-            
-            {activeCategory === categoryKey && (
-              <ul className="topic-list">
-                {category.topics.map(topic => (
-                  <li
-                    key={topic.id}
-                    className={`topic-item ${activeTopicId === topic.id ? 'active' : ''}`}
-                    onClick={() => onTopicChange(topic.id)}
-                  >
-                    {topic.title}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        ))}
+              {topic.title}
+            </li>
+          ))}
+        </ul>
       </div>
     </aside>
   );
