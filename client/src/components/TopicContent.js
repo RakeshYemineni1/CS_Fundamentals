@@ -1,6 +1,15 @@
-import React from 'react';
-import CodeBlock from './CodeBlock';
-import QuestionsList from './QuestionsList';
+import React, { useState } from 'react';
+
+const QuestionItem = ({ question, answer, index }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  
+  return (
+    <div className="question-item" onClick={() => setIsOpen(!isOpen)}>
+      <div className="question-text">{question}</div>
+      {isOpen && <div className="answer">{answer}</div>}
+    </div>
+  );
+};
 
 const TopicContent = ({ topic }) => {
   return (
@@ -22,22 +31,24 @@ const TopicContent = ({ topic }) => {
       )}
 
       {/* Main Explanation */}
-      <div className="explanation-section">
-        <h3 className="section-header">Detailed Explanation</h3>
-        <div className="explanation">
-          {topic.explanation.split('\n').map((paragraph, index) => {
-            const trimmed = paragraph.trim();
-            if (!trimmed) return null;
-            if (trimmed.endsWith(':') && trimmed.length < 100) {
-              return <h4 key={index} className="explanation-heading">{trimmed}</h4>;
-            }
-            if (trimmed.startsWith('- ')) {
-              return <li key={index} className="explanation-list-item">{trimmed.substring(2)}</li>;
-            }
-            return <p key={index} className="explanation-paragraph">{trimmed}</p>;
-          })}
+      {topic.explanation && (
+        <div className="explanation-section">
+          <h3 className="section-header">Detailed Explanation</h3>
+          <div className="explanation">
+            {topic.explanation.split('\n').map((paragraph, index) => {
+              const trimmed = paragraph.trim();
+              if (!trimmed) return null;
+              if (trimmed.endsWith(':') && trimmed.length < 100) {
+                return <h4 key={index} className="explanation-heading">{trimmed}</h4>;
+              }
+              if (trimmed.startsWith('- ') || trimmed.startsWith('• ')) {
+                return <li key={index} className="explanation-list-item">{trimmed.substring(2)}</li>;
+              }
+              return <p key={index} className="explanation-paragraph">{trimmed}</p>;
+            })}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Real World Analogy */}
       {topic.analogy && (
@@ -53,14 +64,25 @@ const TopicContent = ({ topic }) => {
       {topic.keyPoints && (
         <div className="key-points-section">
           <h3 className="section-header">Key Points</h3>
-          <div className="key-points-grid">
-            {topic.keyPoints.map((point, index) => (
-              <div key={index} className="key-point-card">
-                <span className="point-number">{index + 1}</span>
-                <p>{point}</p>
-              </div>
-            ))}
-          </div>
+          {topic.id === 'interview-discussions' ? (
+            <div className="discussion-key-points">
+              {topic.keyPoints.map((point, index) => (
+                <div key={index} className="discussion-point">
+                  <span className="point-bullet">•</span>
+                  <p>{point}</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="key-points-grid">
+              {topic.keyPoints.map((point, index) => (
+                <div key={index} className="key-point-card">
+                  <span className="point-number">{index + 1}</span>
+                  <p>{point}</p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
@@ -87,7 +109,9 @@ const TopicContent = ({ topic }) => {
               {example.description && (
                 <p className="example-description">{example.description}</p>
               )}
-              <CodeBlock code={example.code} language={example.language} />
+              <div className="code-block">
+                <pre>{example.code}</pre>
+              </div>
             </div>
           ))}
         </div>
@@ -96,34 +120,118 @@ const TopicContent = ({ topic }) => {
       {/* Learning Resources */}
       {topic.resources && topic.resources.length > 0 && (
         <div className="resources-section">
-          <h3 className="section-header">Learning Resources</h3>
-          <div className="resources-grid">
-            {topic.resources.map((resource, index) => (
-              <a 
-                key={index} 
-                href={resource.url} 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="resource-card"
-              >
-                <div className="resource-content">
-                  <h5 className="resource-title">{resource.title}</h5>
-                  {resource.description && (
-                    <p className="resource-description">{resource.description}</p>
-                  )}
+          <h3 className="section-header">{topic.id === 'interview-discussions' ? 'Discussion Platforms' : 'Learning Resources'}</h3>
+          {topic.id === 'interview-discussions' ? (
+            <div className="discussion-resources">
+              {topic.resources.map((resource, index) => (
+                <div key={index} className="discussion-resource">
+                  <a 
+                    href={resource.url} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="resource-link"
+                  >
+                    {resource.title}
+                  </a>
+                  <p className="resource-desc">{resource.description}</p>
                 </div>
-                <div className="resource-arrow">→</div>
-              </a>
+              ))}
+            </div>
+          ) : (
+            <div className="resources-grid">
+              {topic.resources.map((resource, index) => (
+                <a 
+                  key={index} 
+                  href={resource.url} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="resource-card"
+                >
+                  <div className="resource-content">
+                    <h5 className="resource-title">{resource.title}</h5>
+                    {resource.description && (
+                      <p className="resource-description">{resource.description}</p>
+                    )}
+                  </div>
+                  <div className="resource-arrow">→</div>
+                </a>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Technical Interview Questions */}
+      {topic.questions && topic.questions.length > 0 && (
+        <div className="questions-section">
+          <h3 className="section-header">Technical Interview Questions ({topic.questions.length})</h3>
+          <div className="questions-list">
+            {topic.questions.map((question, index) => (
+              <QuestionItem 
+                key={index} 
+                question={question.question} 
+                answer={question.answer} 
+                index={index} 
+              />
             ))}
           </div>
         </div>
       )}
 
-      {/* Interview Questions */}
-      {topic.questions && topic.questions.length > 0 && (
+      {/* Behavioral Interview Questions */}
+      {topic.behavioralQuestions && topic.behavioralQuestions.length > 0 && (
         <div className="questions-section">
-          <h3 className="section-header">Interview Questions ({topic.questions.length})</h3>
-          <QuestionsList questions={topic.questions} />
+          <h3 className="section-header">Behavioral & Communication Questions ({topic.behavioralQuestions.length})</h3>
+          <div className="questions-list">
+            {topic.behavioralQuestions.map((question, index) => (
+              <QuestionItem 
+                key={index} 
+                question={question.question} 
+                answer={question.answer} 
+                index={index} 
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Discussion Links */}
+      {topic.discussions && topic.discussions.length > 0 && (
+        <div className="resources-section">
+          <h3 className="section-header">Discussion Links</h3>
+          <div className={topic.id === 'community-discussion-links' ? 'discussion-resources' : 'resources-grid'}>
+            {topic.discussions.map((discussion, index) => (
+              topic.id === 'community-discussion-links' ? (
+                <div key={index} className="discussion-resource">
+                  <a 
+                    href={discussion.url} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="resource-link"
+                  >
+                    {discussion.title}
+                  </a>
+                  <p className="resource-desc">{discussion.description}</p>
+                </div>
+              ) : (
+                <a 
+                  key={index} 
+                  href={discussion.url} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="resource-card"
+                >
+                  <div className="resource-content">
+                    <h5 className="resource-title">{discussion.title}</h5>
+                    {discussion.description && (
+                      <p className="resource-description">{discussion.description}</p>
+                    )}
+                  </div>
+                  <div className="resource-arrow">→</div>
+                </a>
+              )
+            ))}
+          </div>
         </div>
       )}
     </div>
