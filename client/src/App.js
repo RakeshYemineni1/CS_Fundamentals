@@ -7,6 +7,7 @@ import { osTopics } from './data/osTopics';
 import { dbmsTopics } from './data/dbmsTopics';
 import { cnTopics } from './data/cnTopics';
 import { interviewTopics } from './data/interviewTopics';
+import { aiTopics } from './data/aiTopics';
 
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
     dbms: { name: 'Database Management Systems', topics: dbmsTopics },
     cn: { name: 'Computer Networks', topics: cnTopics },
     interview: { name: 'Interview Questions', topics: interviewTopics },
+    ai: { name: 'AI & Machine Learning', topics: aiTopics },
 
   };
 
