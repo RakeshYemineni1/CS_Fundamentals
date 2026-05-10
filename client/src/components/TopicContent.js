@@ -38,12 +38,39 @@ const TopicContent = ({ topic }) => {
             {topic.explanation.split('\n').map((paragraph, index) => {
               const trimmed = paragraph.trim();
               if (!trimmed) return null;
+
+              // Divider lines (═══, ----, ====)
+              if (/^[═=─-]{6,}$/.test(trimmed)) {
+                return <hr key={index} className="explanation-divider" />;
+              }
+
+              // ALL CAPS headings (e.g. "WHAT IS MACHINE LEARNING?")
+              if (
+                trimmed === trimmed.toUpperCase() &&
+                trimmed.length > 3 &&
+                trimmed.length < 120 &&
+                /[A-Z]/.test(trimmed) &&
+                !trimmed.startsWith('-') &&
+                !trimmed.startsWith('•')
+              ) {
+                return <h4 key={index} className="explanation-heading">{trimmed}</h4>;
+              }
+
+              // Lines ending with ':' under 100 chars
               if (trimmed.endsWith(':') && trimmed.length < 100) {
                 return <h4 key={index} className="explanation-heading">{trimmed}</h4>;
               }
+
+              // Bullet points starting with - or •
               if (trimmed.startsWith('- ') || trimmed.startsWith('• ')) {
                 return <li key={index} className="explanation-list-item">{trimmed.substring(2)}</li>;
               }
+
+              // Numbered list items (1. text, 2. text)
+              if (/^\d+\.\s/.test(trimmed)) {
+                return <li key={index} className="explanation-list-item explanation-numbered">{trimmed}</li>;
+              }
+
               return <p key={index} className="explanation-paragraph">{trimmed}</p>;
             })}
           </div>

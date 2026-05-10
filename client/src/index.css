@@ -740,6 +740,22 @@ body.light-mode .explanation-heading {
   border-bottom-color: #d5d5d5;
 }
 
+.explanation-divider {
+  border: none;
+  border-top: 1px solid #2a2a2a;
+  margin: 28px 0;
+}
+
+body.light-mode .explanation-divider {
+  border-top-color: #e5e5e5;
+}
+
+.explanation-numbered {
+  list-style: none;
+  margin-left: 0;
+  padding-left: 0;
+}
+
 .analogy-box {
   background: #0a0a0a;
   padding: 28px 32px;
